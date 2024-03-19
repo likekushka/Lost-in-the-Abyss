@@ -1,30 +1,10 @@
-import pygame
-import sys
+from player import Player
+from monster import Monster
 
-# Инициализация Pygame
-pygame.init()
+player = Player("likek", 20, 5, 1)
+monster = Monster("Vampire", 20, 5, 1, 200)
 
-# Определение размеров окна
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+player.attack(monster)
+monster.attack(player)
 
-# Создание окна Pygame
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("UTP")
-
-# Основной игровой цикл
-running = True
-while running:
-    # Обработка событий
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    # Здесь будет ваш игровой код
-
-    # Отображение изменений
-    pygame.display.flip()
-
-# Выход из игры
-pygame.quit()
-sys.exit()
+print(player.hp, monster.hp)
