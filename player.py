@@ -8,4 +8,3 @@ class Player(Character):
 
     def attack(self, target: Character):
         target.hp -= self.atk
-

@@ -8,6 +8,7 @@ class Character(ABC):
         self.hp = hp
         self.atk = atk
         self.lvl = lvl
+        self.max_hp = self.hp
 
     @abstractmethod
     def attack(self, target):
