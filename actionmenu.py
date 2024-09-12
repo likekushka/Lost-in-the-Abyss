@@ -1,7 +1,8 @@
 from pygame import font, Surface, Rect, MOUSEBUTTONDOWN
 from monster import Monster
 from player import Player
-from constants import BLACK, WHITE, SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import BLACK, WHITE, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN
+from message_ui import MessageUI
 
 
 class ActionMenu:
@@ -20,7 +21,7 @@ class ActionMenu:
             "load": {"render": self.font.render("Загрузить", True, WHITE), "rect": Rect(0, 0, 0, 0)}
         }
 
-    def draw(self, screen: Surface):
+    def draw(self):
         self.surface.fill(BLACK)
 
         y_offset = 50
@@ -35,9 +36,9 @@ class ActionMenu:
             )
             y_offset += 50
 
-        screen.blit(self.surface, (self.x, self.y))
+        SCREEN.blit(self.surface, (self.x, self.y))
 
-    def handle_event(self, event, player: Player, monster: Monster,
+    def handle_event(self, event, player: Player, monster: Monster, message: MessageUI,
                      reset_monster, save_game_callback, load_game_callback):
         if event.type == MOUSEBUTTONDOWN:
             for button_name, button_data in self.buttons.items():
@@ -45,17 +46,28 @@ class ActionMenu:
                     if button_name == "atk":
                         player.attack(monster)
                         monster.sprite.set_animation("hurt")
+                        player.update_defense_status()
                         if monster.hp > 0:
                             monster.attack(player)
-                            player.update_defense_status()
                     elif button_name == "def":
-                        player.defend()
-                        if monster.hp > 0:
-                            monster.attack(player)
-                            player.update_defense_status()
+                        if not player.defense_cd:
+                            player.defend()
+                            message.show_message_ui("jsons/messages.json", "message",
+                                                    message_name="def_start", fill_black=False)
+                        else:
+                            message.show_message_ui("jsons/messages.json", "message",
+                                                    message_name="def_cd", fill_black=False)
                     elif button_name == "esc":
+                        message.show_message_ui("jsons/messages.json", "message",
+                                                message_name="escape")
                         reset_monster()
                     elif button_name == "save":
                         save_game_callback()
                     elif button_name == "load":
                         load_game_callback()
+
+        if player.defense_cd:
+            self.buttons['def']['render'] = self.font.render(f"Защита ({player.defense_cd})", True,
+                                                             (150, 150, 150))
+        else:
+            self.buttons['def']['render'] = self.font.render("Защита", True, WHITE)

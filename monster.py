@@ -7,10 +7,9 @@ import random
 
 class Monster(Character):
     MONSTER_STATS = [
-        {"name": "Скелет", "hp": 20, "atk": 5, "lvl": 1, "exp": 100, "sprite_path": "Sprites/Skeleton/"},
-        {"name": "Зомби", "hp": 25, "atk": 3, "lvl": 1, "exp": 120, "sprite_path": "Sprites/Zombie/"},
-        {"name": "Вампир", "hp": 30, "atk": 7, "lvl": 2, "exp": 150, "sprite_path": "Sprites/Vampire/"},
-        # Добавьте больше монстров здесь
+        {"name": "Скелет", "hp": 20, "atk": 5, "lvl": 1, "exp": 130, "sprite_path": "Sprites/Skeleton/"},
+        {"name": "Гоблин", "hp": 15, "atk": 3, "lvl": 1, "exp": 100, "sprite_path": "Sprites/Goblin/"},
+        {"name": "Вампир", "hp": 30, "atk": 7, "lvl": 1, "exp": 150, "sprite_path": "Sprites/Vampire/"},
     ]
 
     def __init__(self):
@@ -20,14 +19,15 @@ class Monster(Character):
         self.sprite = None
         self.sprite_load(stats["sprite_path"])
 
-    @classmethod
-    def load_from_save_data(cls, data):
-        monster = cls.__new__(cls)
-        super(Monster, monster).__init__(data["name"], data["max_hp"], data["atk"], data["lvl"], data["exp"])
-        monster.hp = data["hp"]
-        monster.sprite_path = data["sprite_path"]
-        monster.sprite_load(monster.sprite_path)
-        return monster
+    def load_from_save_data(self, data):
+        self.name = data["name"]
+        self.max_hp = data["max_hp"]
+        self.atk = data["atk"]
+        self.lvl = data["lvl"]
+        self.exp = data["exp"]
+        self.hp = data["hp"]
+        self.sprite_path = data["sprite_path"]
+        self.sprite_load(self.sprite_path)
 
     def attack(self, target: Character):
         if target.defending:
@@ -40,15 +40,19 @@ class Monster(Character):
         idle_frames = self._load_and_scale_frames(f"{sprite_path}_idle_", 4)
         hurt_frames = self._load_and_scale_frames(f"{sprite_path}_hurt_", 4, add_last_frame=True)
         death_frames = self._load_and_scale_frames(f"{sprite_path}_death_", 4, add_last_frame=True)
+        attack_frames = self._load_and_scale_frames(f"{sprite_path}_attack_", 5, add_last_frame=True)
 
-        self.sprite = AnimatedSprite(idle_frames, hurt_frames, death_frames,
+        self.sprite = AnimatedSprite(idle_frames, hurt_frames, death_frames, attack_frames,
                                      SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3)
 
     def _load_and_scale_frames(self, base_path: str, count: int, add_last_frame: bool = False):
-        frames = [image.load(f"{base_path}{i}.png") for i in range(1, count + 1)]
-        frames = [transform.scale(frame, (450, 450)) for frame in frames]
+        try:
+            frames = [image.load(f"{base_path}{i}.png") for i in range(1, count + 1)]
+            frames = [transform.scale(frame, (650, 650)) for frame in frames]
 
-        if add_last_frame:
-            frames.append(frames[-1])
+            if add_last_frame:
+                frames.append(frames[-1])
 
-        return frames
+            return frames
+        except FileNotFoundError:
+            print(f"file not found: {base_path}")

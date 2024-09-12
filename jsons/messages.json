@@ -1,0 +1,113 @@
+{
+  "save_success": {
+    "messages": [
+      "Данные успешно сохранены!"
+    ],
+    "buttons": ["ok"]
+  },
+
+  "load_success": {
+    "messages": [
+      "Данные успешно загружены!"
+    ],
+    "buttons": ["ok"]
+  },
+
+  "load_game_offer": {
+    "messages": [
+      "Обнаружено существующее",
+      "сохранение.",
+      "Хотитe загрузить?"
+    ],
+    "buttons": ["yes", "no"]
+  },
+
+  "save_error": {
+    "messages": [
+      "Ошибка сохранения!"
+    ],
+    "buttons": ["ok"]
+  },
+
+  "load_error": {
+    "messages": [
+      "Файл сохранения не найден!"
+    ],
+    "buttons": ["ok"]
+  },
+
+  "plr_lvl_up": {
+    "messages": [
+      "Вы повысили уровень!",
+      "Ваши характеристики увеличены:",
+      "Здоровье: {hp_bonus}",
+      "Атака: {atk_bonus}"
+    ],
+    "buttons": ["ok"]
+  },
+
+  "plr_death": {
+    "messages": [
+      "Вы проиграли!"
+    ],
+    "buttons": ["restart", "load"]
+  },
+
+  "plr_get_name": {
+    "messages": [
+      "Введите имя пользователя:",
+      "{player_name}"
+    ],
+    "buttons": ["apply"]
+  },
+
+  "escape": {
+    "messages": [
+      "Вы сбежали!"
+    ],
+    "buttons": ["next"]
+  },
+
+  "enemy_greeting": {
+    "messages": [
+      "После долгих странствий",
+      "по пещерам вы встретили",
+      "{monster_name}."
+    ],
+    "buttons": ["ok"]
+  },
+
+  "enemy_death": {
+    "messages": [
+      "Вы победили {monster_name}.",
+      "Вы получили {monster_exp} опыта."
+    ],
+    "buttons": ["next"]
+  },
+
+  "def_start": {
+    "messages": [
+      "Вы укрепили свою защиту!",
+      "В течение двух ходов",
+      "вы получаете на 50% меньше",
+      "урона."
+    ],
+    "buttons": ["ok"]
+  },
+
+  "def_cd": {
+    "messages": [
+      "Вы не можете укрепить",
+      "вашу защиту в течение",
+      "следующих {defense_cd} ходов."
+    ],
+    "buttons": ["ok"]
+  },
+
+  "part_2_choice": {
+    "messages": [
+      "Попробовать подняться?"
+    ],
+    "buttons": ["yes", "no"]
+  }
+}

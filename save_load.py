@@ -1,10 +1,11 @@
 import pickle
+from character import Character
 from player import Player
 from monster import Monster
-from message import Message
+from message_ui import MessageUI
 
 
-def save_game(player, monster, message):
+def save_game(player: Character, monster: Character):
     save_data = {
         "player": {
             "name": player.name,
@@ -15,6 +16,7 @@ def save_game(player, monster, message):
             "exp": player.exp,
             "defending": player.defending,
             "defense_turns": player.defense_turns,
+            "defense_cd": player.defense_cd,
         },
         "monster": {
             "name": monster.name,
@@ -24,34 +26,36 @@ def save_game(player, monster, message):
             "lvl": monster.lvl,
             "exp": monster.exp,
             "sprite_path": monster.sprite_path,
-        },
-        "message": {
-            "current_message": message.current_message,
-            "hidden": message.hidden,
         }
     }
+    try:
+        with open("save.pkl", "wb") as file:
+            pickle.dump(save_data, file)
 
-    with open("savegame.pkl", "wb") as file:
-        pickle.dump(save_data, file)
+        message = MessageUI()
+        message.show_message_ui("jsons/messages.json", "message", message_name="save_success")
+    except FileNotFoundError:
+        message = MessageUI()
+        message.show_message_ui("jsons/messages.json", "message", message_name="save_error")
+
 
 def load_game():
-    with open("savegame.pkl", "rb") as file:
-        save_data = pickle.load(file)
+    try:
+        with open("save.pkl", "rb") as file:
+            save_data = pickle.load(file)
+        player_data = save_data["player"]
+        monster_data = save_data["monster"]
 
-    player_data = save_data["player"]
-    monster_data = save_data["monster"]
-    message_data = save_data["message"]
+        player = Player(player_data["name"], player_data["max_hp"], player_data["atk"], player_data["lvl"])
+        player.load_from_save_data(player_data)
 
-    player = Player(player_data["name"], player_data["max_hp"], player_data["atk"], player_data["lvl"])
-    player.hp = player_data["hp"]
-    player.exp = player_data["exp"]
-    player.defending = player_data["defending"]
-    player.defense_turns = player_data["defense_turns"]
+        monster = Monster()
+        monster.load_from_save_data(monster_data)
 
-    monster = Monster.load_from_save_data(monster_data)
+        message = MessageUI()
+        message.show_message_ui("jsons/messages.json", "message", message_name="load_success")
 
-    message = Message()
-    message.current_message = message_data["current_message"]
-    message.hidden = message_data["hidden"]
-
-    return player, monster, message
+        return player, monster
+    except FileNotFoundError:
+        message = MessageUI()
+        message.show_message_ui("jsons/messages.json", "message", message_name="load_error")

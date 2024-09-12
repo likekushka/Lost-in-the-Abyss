@@ -1,10 +1,11 @@
 from monster import Monster
 from player import Player
+from character import Character
 from pygame import font, Surface
-from constants import BLACK, WHITE, SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import BLACK, WHITE, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN
 
 
-class Infobar:
+class Infobox:
     def __init__(self):
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT // 10
@@ -19,11 +20,11 @@ class Infobar:
         self.font = font.Font("Fonts/determination.otf", 21)
         self.stats = ["Здоровье: ", "Уровень: ", "Атака: ", "Опыт: "]
 
-    def draw(self, screen: Surface, player: Player, monster: Monster):
-        self._draw_character_info(screen, player, is_player=True)
-        self._draw_character_info(screen, monster, is_player=False)
+    def draw(self, player: Player, monster: Monster):
+        self._draw_character_info(player, is_player=True)
+        self._draw_character_info(monster, is_player=False)
 
-    def _draw_character_info(self, screen: Surface, character, is_player: bool):
+    def _draw_character_info(self, character: Character, is_player: bool):
         self.surface.fill(BLACK)
 
         name_text_render = self._render_text(str(character.name))
@@ -42,7 +43,7 @@ class Infobar:
         self._blit_texts(name_text_render, hp_text_render, lvl_text_render, atk_text_render, exp_text_render, gap_width)
 
         self.y = SCREEN_HEIGHT - self.height if is_player else 0
-        screen.blit(self.surface, (self.x, self.y))
+        SCREEN.blit(self.surface, (self.x, self.y))
 
     def _render_text(self, text: str) -> Surface:
         return self.font.render(text, True, WHITE)
