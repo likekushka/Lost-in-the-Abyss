@@ -2,7 +2,7 @@ from character import Character
 
 
 class Player(Character):
-    def __init__(self, name="Likek", hp=40,
+    def __init__(self, name="Likek", hp=30,
                  atk=5, lvl=1):
         super().__init__(name, hp, atk, lvl, exp=0)
 

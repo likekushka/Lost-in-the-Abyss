@@ -1,21 +1,25 @@
 import pygame
 import sys
 from pygame import Rect, Surface, font, MOUSEBUTTONDOWN
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, BLACK, WHITE, FONT_SIZE, FONT_PATH, SCREEN
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, BLACK, WHITE, FONT_SIZE, FONT_PATH
 import json
 
 
 class MessageUI:
-    def __init__(self, width=600, height=400):
+    def __init__(self, screen: Surface, width=600, height=400):
         self.width = width
         self.height = height
         self.x = SCREEN_WIDTH // 2 - self.width // 2
         self.y = SCREEN_HEIGHT // 2 - self.height // 2
 
         self.hidden = True
+
         self.font = font.Font(FONT_PATH, FONT_SIZE)
+
+        self.screen = screen
         self.surface = Surface((self.width, self.height))
         self.boarder_surface = Surface((self.width + 10, self.height + 10))
+
         self.buttons = {
             "ok": {"render": self.font.render("Oк", True, WHITE), "rect": Rect(0, 0, 0, 0)},
             "yes": {"render": self.font.render("Да", True, WHITE), "rect": Rect(0, 0, 0, 0)},
@@ -37,6 +41,7 @@ class MessageUI:
             self.current_dialog = self.dialog_data[dialog_id]
             self.current_message = "\n".join(self.current_dialog["messages"])
             self.hidden = False
+
         else:
             print(f"Dialog {dialog_id} not found!")
 
@@ -45,6 +50,7 @@ class MessageUI:
             with open(filepath, 'r', encoding='utf-8') as file:
                 self.dialog_data = json.load(file)
             return True
+
         except FileNotFoundError:
             print(f"file {filepath} not found!")
             return False
@@ -54,10 +60,10 @@ class MessageUI:
         self.boarder_surface.fill(WHITE)
 
     def _blit_surfaces(self):
-        SCREEN.blit(self.boarder_surface, (self.x, self.y))
-        SCREEN.blit(self.surface, (self.x + 5, self.y + 5))
+        self.screen.blit(self.boarder_surface, (self.x, self.y))
+        self.screen.blit(self.surface, (self.x + 5, self.y + 5))
 
-    def _calculate_btn_pos(self):
+    def _calculate_button_position(self):
         button_y = self.height - 50
         button_gap = 20
         total_width = sum(
@@ -65,6 +71,15 @@ class MessageUI:
                               len(self.current_dialog["buttons"]) - 1)
         button_x = (self.width - total_width) // 2
         return button_x, button_y
+    def _render_line(self, text, font_size):
+        message_text_render = self.font.render(text, True, WHITE)
+
+        while message_text_render.get_width() > self.width - 30 and font_size >= 30:
+            font_size -= 1
+            self.font = font.Font(FONT_PATH, font_size)
+            message_text_render = self.font.render(text, True, WHITE)
+
+        return message_text_render, font_size
 
     def _render_button_text(self, button_x, button_y):
         button_gap = 20
@@ -82,7 +97,7 @@ class MessageUI:
 
     def _draw_buttons(self):
         if self.current_dialog:
-            button_x, button_y = self._calculate_btn_pos()
+            button_x, button_y = self._calculate_button_position()
             self._render_button_text(button_x, button_y)
 
     def _draw_messages(self):
@@ -90,12 +105,14 @@ class MessageUI:
             message_texts = self.current_message.split("\n")
 
             y_offset = 20
-            current_font_size = 40
+            current_font_size = FONT_SIZE
             message_text_renders = []
+
             for message_text in message_texts:
-                message_text_render, current_font_size = self._render_message_text(message_text, current_font_size)
+                message_text_render, current_font_size = self._render_line(message_text, current_font_size)
+
             for message_text in message_texts:
-                message_text_render, current_font_size = self._render_message_text(message_text, current_font_size)
+                message_text_render, current_font_size = self._render_line(message_text, current_font_size)
                 message_text_renders.append(message_text_render)
 
             message_height = sum(message_text_render.get_height() + 10 for message_text_render in message_text_renders)
@@ -114,14 +131,6 @@ class MessageUI:
                 self.surface.blit(message_text_render, (text_x, y_offset))
                 y_offset += message_text_render.get_height() + 10
 
-    def _render_message_text(self, text, font_size):
-        message_text_render = self.font.render(text, True, WHITE)
-        while message_text_render.get_width() > self.width - 30 and font_size >= 30:
-            font_size -= 1
-            self.font = font.Font(FONT_PATH, font_size)
-            message_text_render = self.font.render(text, True, WHITE)
-        return message_text_render, font_size
-
     def _draw(self):
         if not self.hidden:
             self._draw_messages()
@@ -131,7 +140,7 @@ class MessageUI:
     def _draw_dialog(self):
         i = 1
         while i <= len(self.dialog_data):
-            SCREEN.fill(BLACK)
+            self.screen.fill(BLACK)
 
             self._load_message(f"message_{i}")
             self._draw()
@@ -145,30 +154,36 @@ class MessageUI:
 
     def _draw_message(self, restart_game, load_game):
         btn_flag = False
+
         while not btn_flag:
             self._draw()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
                 if self.handle_event(event):
                     if self.button_pressed == "restart":
                         restart_game()
                     if self.button_pressed == "load":
                         load_game()
+
                     btn_flag = True
 
     def _get_name_and_draw(self):
         player_name = ""
         btn_flag = False
+
         while not btn_flag:
             self._load_message("plr_get_name")
             self.current_message = self.current_message.format(player_name=player_name)
             self._draw()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
                         if len(player_name) > 0:
@@ -179,6 +194,7 @@ class MessageUI:
                     else:
                         if event.unicode not in "0123456789!@#$%^&*()-_+=<>.,:;/?|'\\\"~`{}[]" and len(player_name) < 8:
                             player_name += event.unicode
+
                 if self.handle_event(event) and len(player_name) > 0:
                     btn_flag = True
 
@@ -188,21 +204,25 @@ class MessageUI:
                         monster=None, player=None, fill_black=True):
         if self._load_file_data(file_path):
             if fill_black:
-                SCREEN.fill(BLACK)
+                self.screen.fill(BLACK)
             if message_type == "dialog":
                 self._draw_dialog()
+
             elif message_type == "message":
                 self._load_message(f"{message_name}")
                 if message_name == "plr_lvl_up":
                     self.current_message = self.current_message.format(
                         hp_bonus=player.level_up_hp_bonus[player.lvl - 2],
                         atk_bonus=player.level_up_atk_bonus[player.lvl - 2])
+
                 elif message_name == "def_cd":
                     self.current_message = self.current_message.format(defense_cd=player.defense_cd)
                 elif monster:
                     self.current_message = self.current_message.format(monster_name=monster.name,
                                                                        monster_exp=monster.exp)
+
                 self._draw_message(restart_game, load_game)
+
             elif message_type == "name":
                 player.name = self._get_name_and_draw()
             else:

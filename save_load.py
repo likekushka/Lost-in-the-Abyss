@@ -5,7 +5,7 @@ from monster import Monster
 from message_ui import MessageUI
 
 
-def save_game(player: Character, monster: Character):
+def save_game(player: Character, monster: Character, message: MessageUI):
     save_data = {
         "player": {
             "name": player.name,
@@ -25,6 +25,7 @@ def save_game(player: Character, monster: Character):
             "atk": monster.atk,
             "lvl": monster.lvl,
             "exp": monster.exp,
+            "boss": monster.boss_status,
             "sprite_path": monster.sprite_path,
         }
     }
@@ -32,14 +33,12 @@ def save_game(player: Character, monster: Character):
         with open("save.pkl", "wb") as file:
             pickle.dump(save_data, file)
 
-        message = MessageUI()
         message.show_message_ui("jsons/messages.json", "message", message_name="save_success")
     except FileNotFoundError:
-        message = MessageUI()
         message.show_message_ui("jsons/messages.json", "message", message_name="save_error")
 
 
-def load_game():
+def load_game(message: MessageUI):
     try:
         with open("save.pkl", "rb") as file:
             save_data = pickle.load(file)
@@ -52,10 +51,8 @@ def load_game():
         monster = Monster()
         monster.load_from_save_data(monster_data)
 
-        message = MessageUI()
         message.show_message_ui("jsons/messages.json", "message", message_name="load_success")
 
         return player, monster
     except FileNotFoundError:
-        message = MessageUI()
         message.show_message_ui("jsons/messages.json", "message", message_name="load_error")

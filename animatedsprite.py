@@ -1,7 +1,7 @@
-import pygame
+from pygame import sprite
 
 
-class AnimatedSprite(pygame.sprite.Sprite):
+class AnimatedSprite(sprite.Sprite):
     def __init__(self, idle_frames, hurt_frames, death_frames, attack_frames, x, y):
         super().__init__()
         self.idle_frames = idle_frames
@@ -39,9 +39,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
         elif animation_name == "hurt":
             self.current_frames = self.hurt_frames
             self.current_animation = "hurt"
+
         elif animation_name == "death":
             self.current_frames = self.death_frames
             self.current_animation = "death"
+
         elif animation_name == "attack":
             self.current_frames = self.attack_frames
             self.current_animation = "attack"

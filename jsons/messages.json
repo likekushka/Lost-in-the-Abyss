@@ -53,6 +53,14 @@
     "buttons": ["restart", "load"]
   },
 
+  "boss_death": {
+    "messages": [
+      "Поздравляем!",
+      "Вы прошли игру."
+    ],
+    "buttons": ["restart", "load"]
+  },
+
   "plr_get_name": {
     "messages": [
       "Введите имя пользователя:",

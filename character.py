@@ -1,7 +1,4 @@
-from abc import ABC, abstractmethod
-
-
-class Character(ABC):
+class Character:
     def __init__(self, name: str, hp: int,
                  atk: int, lvl: int, exp: int):
         self.name = name
