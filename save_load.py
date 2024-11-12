@@ -37,7 +37,6 @@ def save_game(player: Character, monster: Character, message: MessageUI):
     except FileNotFoundError:
         message.show_message_ui("jsons/messages.json", "message", message_name="save_error")
 
-
 def load_game(message: MessageUI):
     try:
         with open("save.pkl", "rb") as file:

@@ -83,17 +83,15 @@ class Game:
     def handle_monster_death(self):
         if self.monster.sprite.death_animation_complete:
             if not self.monster.boss_status:
-                self.message.show_message_ui("jsons/messages.json", "message", message_name="enemy_death",
-                                             monster=self.monster, fill_black=False)
+                self.message.show_message_ui("jsons/messages.json", "message",
+                                             message_name="enemy_death", monster=self.monster, fill_black=False)
                 if self.player.level_up(self.monster.exp):
-                    self.message.show_message_ui("jsons/messages.json", "message", message_name="plr_lvl_up",
-                                                 player=self.player, fill_black=False)
+                    self.message.show_message_ui("jsons/messages.json", "message",
+                                                 message_name="plr_lvl_up", player=self.player, fill_black=False)
                 self.reset_monster()
                 pygame.event.clear()
             else:
                 pygame.time.delay(500)
-
-                self.monster.sprite.kill()
 
                 for i in range(0, 255, 5):
                     self.screen.fill((i, i, i))
@@ -105,8 +103,9 @@ class Game:
                 pygame.time.delay(1500)
 
                 self.message.show_message_ui("jsons/story_part_final.json", "dialog")
-                self.message.show_message_ui("jsons/messages.json", "message", message_name="boss_death",
-                                             restart_game=self.restart_game, load_game=self.load_game)
+                self.message.show_message_ui("jsons/messages.json", "message",
+                                             message_name="boss_death", restart_game=self.restart_game,
+                                             load_game=self.load_game)
 
     def restart_game(self):
         self.player = Player()
@@ -123,8 +122,8 @@ class Game:
     def create_monster(self):
         self.monster = Monster()
         self.all_sprites.add(self.monster.sprite)
-        self.message.show_message_ui("jsons/messages.json", "message", message_name="enemy_greeting",
-                                     monster=self.monster)
+        self.message.show_message_ui("jsons/messages.json", "message",
+                                     message_name="enemy_greeting", monster=self.monster)
 
     def create_boss_monster(self):
         self.monster = Monster(boss_status=True)
@@ -149,7 +148,8 @@ class Game:
     def check_save(self):
         try:
             open("save.pkl")
-            self.message.show_message_ui("jsons/messages.json", "message", message_name="load_game_offer")
+            self.message.show_message_ui("jsons/messages.json", "message",
+                                         message_name="load_game_offer")
             return self.message.button_pressed == "yes"
         except FileNotFoundError:
             return False
@@ -158,7 +158,8 @@ class Game:
         self.message.show_message_ui("jsons/messages.json", "name", player=self.player)
         self.message.show_message_ui("jsons/story_part_1.json", "dialog")
         self.message.show_message_ui("jsons/story_part_2.1.json", "dialog")
-        self.message.show_message_ui("jsons/messages.json", "message", message_name="part_2_choice")
+        self.message.show_message_ui("jsons/messages.json", "message",
+                                     message_name="part_2_choice")
         if self.message.button_pressed == "no":
             self.message.show_message_ui("jsons/story_bad_ending.json", "dialog")
             self.handle_player_death()

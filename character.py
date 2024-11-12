@@ -7,8 +7,6 @@ class Character:
         self.atk = atk
         self.lvl = lvl
         self.exp = exp
-        self.defending = False
-        self.defense_turns = 0
 
     def attack(self, target):
         pass

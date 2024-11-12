@@ -40,7 +40,7 @@ class ActionMenu:
         screen.blit(self.surface, (self.x, self.y))
 
     def handle_event(self, event, player: Player, monster: Monster, message: MessageUI,
-                     reset_monster, save_game_callback, load_game_callback):
+                     reset_monster, save_game, load_game):
         if event.type == MOUSEBUTTONDOWN:
             for button_name, button_data in self.buttons.items():
                 if button_data["rect"].collidepoint(event.pos):
@@ -61,19 +61,24 @@ class ActionMenu:
                             message.show_message_ui("jsons/messages.json", "message",
                                                     message_name="def_cd", fill_black=False, player=player)
 
-                    elif button_name == "esc":
+                    elif button_name == "esc" and not monster.boss_status:
                         message.show_message_ui("jsons/messages.json", "message",
                                                 message_name="escape")
                         reset_monster()
 
                     elif button_name == "save":
-                        save_game_callback()
+                        save_game()
 
                     elif button_name == "load":
-                        load_game_callback()
+                        load_game()
 
         if player.defense_cd:
             self.buttons['def']['render'] = self.font.render(f"Защита ({player.defense_cd})", True,
                                                              (150, 150, 150))
         else:
             self.buttons['def']['render'] = self.font.render("Защита", True, WHITE)
+
+        if monster.boss_status:
+            self.buttons['esc']['render'] = self.font.render(f"Сбежать", True, (150, 150, 150))
+        else:
+            self.buttons['esc']['render'] = self.font.render("Сбежать", True, WHITE)
